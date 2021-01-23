@@ -1,0 +1,8 @@
+Fulano, 300 
+Beutrano, 200
+Ciclano, 180
+Um Dois Tres Oliveira Quatro, 400
+Candidato X, 1000
+Candidato Y, 800
+Candidato Z, 1200
+
