@@ -2,9 +2,9 @@ package fluxobytes;
 
 public class Candidato {
 
-	int totalVotos;
-
-	String nome;
+	private Integer id; 
+	private Integer totalVotos;
+	private String nome;
 
 	
 	
@@ -19,12 +19,12 @@ public class Candidato {
 	}
 
 
-	public int getTotalVotos() {
+	public Integer getTotalVotos() {
 		return totalVotos;
 	}
 
 
-	public void setTotalVotos(int totalVotos) {
+	public void setTotalVotos(Integer totalVotos) {
 		this.totalVotos = totalVotos;
 	}
 
@@ -36,6 +36,16 @@ public class Candidato {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+
+
+	public Integer getId() {
+		return id;
+	}
+
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	
 	

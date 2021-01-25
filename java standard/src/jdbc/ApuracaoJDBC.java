@@ -3,21 +3,29 @@ package jdbc;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import fluxobytes.ApuracaoVotosArquivo;
+import fluxobytes.Candidato;
 
 public class ApuracaoJDBC {
 
 	
 	public void executarApuracao() {
-		List<Candidato> candidatos = new ArrayList<>();
+		List<Candidato> candidatos = null;
 		
 		criarTabelaCandidatos();
 		
 		Connection con = null;
 		
 		try {
+			ApuracaoVotosArquivo apuracaoArquivo = new ApuracaoVotosArquivo();
+			apuracaoArquivo.apurarVotos();
+			candidatos = apuracaoArquivo.getCandidatos();
+			
 			con = getConexao();
 			int id = 0;
 			
@@ -36,6 +44,34 @@ public class ApuracaoJDBC {
 			}
 		}
 	}
+
+	public void imprimirApuracao(Connection con) throws SQLException {
+		String sql =  "SELECT ID, "
+					+ "		  NOME, "
+					+ "		  TOTAL_VOTOS "
+					+ "FROM   CANDIDATO";
+		
+		List<Candidato> candidatos  = new ArrayList<>();
+		PreparedStatement statement = con.prepareStatement(sql);
+		ResultSet resultSet         = statement.executeQuery();
+		
+		while (resultSet.next()) {
+			Candidato candidato = new Candidato(
+									resultSet.getString("NOME"), 
+									resultSet.getInt("TOTAL_VOTOS")
+								  );
+			candidato.setId(resultSet.getInt("ID"));
+			candidatos.add(candidato);
+		}
+		for (Candidato candidato: candidatos) {
+			System.out.println(
+				"Candidato: " + candidato.getNome() + " - " + 
+				"Total de Votos: " + candidato.getTotalVotos()
+			);
+		}
+		statement.close();
+	}
+	
 	
 	public void inserirCandidato(Candidato candidato, Connection con) throws SQLException {
 		String sql =  "INSERT INTO CANDIDATO( "

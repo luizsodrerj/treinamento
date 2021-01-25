@@ -9,13 +9,16 @@ import java.util.StringTokenizer;
 
 public class ApuracaoVotosArquivo {
 
+	List<Candidato>candidatos = null;
+	
+	
 	public static void main(String[] args) {
 		ApuracaoVotosArquivo apuracao = new ApuracaoVotosArquivo();
 		
 		apuracao.apurarVotos();
 	}
 
-	void apurarVotos() {
+	public void apurarVotos() {
 		try {
 			List<Candidato>listaCandidatos = new ArrayList<>(); 
 					
@@ -40,15 +43,20 @@ public class ApuracaoVotosArquivo {
 			
 			for (Candidato candidato : listaCandidatos) {
 				System.out.println(
-					candidato.nome + " - " + 
-					candidato.totalVotos + " votos"
+					candidato.getNome() + " - " + 
+					candidato.getTotalVotos() + " votos"
 				);
 			}
+			candidatos = listaCandidatos;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
+	public List<Candidato> getCandidatos() {
+		return candidatos;
+	}
 }
 
 
