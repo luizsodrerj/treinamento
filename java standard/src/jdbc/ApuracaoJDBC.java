@@ -15,6 +15,11 @@ import fluxobytes.Candidato;
 public class ApuracaoJDBC {
 
 	
+	public static void main(String[] args) {
+		ApuracaoJDBC apuracao = new ApuracaoJDBC();
+		apuracao.executarApuracao();
+	}
+	
 	public void executarApuracao() {
 		try {
 			criarTabelaCandidatos();
@@ -158,6 +163,8 @@ public class ApuracaoJDBC {
 	public void inserirCandidatos(Collection<Candidato> candidatos) throws SQLException {
 		Connection con = null;
 		try {
+			limparTabelaCandidatos();
+			
 			String sql =  "INSERT INTO CANDIDATO( "
 						+ "  ID, NOME, TOTAL_VOTOS "
 						+ ") VALUES ( "
@@ -172,6 +179,33 @@ public class ApuracaoJDBC {
 				statement.setInt(1, candidato.getId());
 				statement.setString(2, candidato.getNome());
 				statement.setInt(3, candidato.getTotalVotos());
+				statement.executeUpdate();
+				statement.close();
+			}
+		} finally {
+			con.close();
+		}
+	}
+
+	public void limparTabelaCandidatos() throws SQLException {
+		Connection con = null;
+		try {
+			String sql =  "SELECT COUNT(*) AS TOTAL_REGISTROS "
+						+ "FROM   CANDIDATO ";
+			
+			con 						= getConexao();
+			PreparedStatement statement = con.prepareStatement(sql);
+			ResultSet resultSet         = statement.executeQuery();
+			int countRegistros			= 0;
+			
+			if (resultSet.next()) {
+				countRegistros = resultSet.getInt("TOTAL_REGISTROS");
+			}
+			statement.close();
+			
+			if (countRegistros > 0) {
+				sql 	  = "DELETE FROM CANDIDATO";
+				statement = con.prepareStatement(sql);
 				statement.executeUpdate();
 				statement.close();
 			}
