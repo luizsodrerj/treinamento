@@ -1,9 +1,16 @@
 package jdbc;
 
+import java.awt.Font;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 public class ECommerceJDBC {
 
@@ -11,17 +18,71 @@ public class ECommerceJDBC {
 
 	}
 
-	private void criarBdECommerce() throws SQLException {
+	void comprarProdutos() {
+		JLabel nomeCliente = new JLabel("Informe o nome do Cliente:");
+		nomeCliente.setFont(new Font("Arial", Font.BOLD, 18));
+		JLabel endereco = new JLabel("Informe o Endereço de Entrega:");
+		endereco.setFont(new Font("Arial", Font.BOLD, 18));
+		JLabel nomeProduto = new JLabel("Informe o nome do Produto para incluir no Carrinho:");
+		nomeProduto.setFont(new Font("Arial", Font.BOLD, 18));
+		
+		Pedido pedido = new Pedido();
+		pedido.setDataHoraCriacao(new Date());
+		
+		String produto = JOptionPane.showInputDialog(nomeProduto);
+		Produto priProduto = new Produto();
+		priProduto.setDescricao(produto);
+		priProduto.setQtdPedida(1);
+		priProduto.setPreco(500D);
+		priProduto.setPedido(pedido);
+				
+		produto = JOptionPane.showInputDialog(nomeProduto);
+		Produto segundoProduto = new Produto();
+		segundoProduto.setDescricao(produto);
+		segundoProduto.setQtdPedida(2);
+		segundoProduto.setPreco(20D);
+		segundoProduto.setPedido(pedido);
+		
+		produto = JOptionPane.showInputDialog(nomeProduto);
+		Produto terceiroProduto = new Produto();
+		terceiroProduto.setDescricao(produto);
+		terceiroProduto.setQtdPedida(3);
+		terceiroProduto.setPreco(25D);
+		terceiroProduto.setPedido(pedido);
+		
+		List<Produto>carrinhoCompras = new ArrayList<Produto>();
+		carrinhoCompras.add(priProduto);
+		carrinhoCompras.add(segundoProduto);
+		carrinhoCompras.add(terceiroProduto);
+		
+		pedido.setCarrinhoCompras(carrinhoCompras);
+		
+		String nome   = JOptionPane.showInputDialog(nomeCliente);
+		String endCli = JOptionPane.showInputDialog(endereco);
+		Cliente cliente = new Cliente();
+		cliente.setNome(nome);
+		cliente.setEndereco(endCli);
+		pedido.setCliente(cliente);
+		
+		gravarPedidoNoBanco(pedido);
+	}
+	
+	
+	private void gravarPedidoNoBanco(Pedido pedido) {
+		
+	}
+
+	void criarBdECommerce() throws SQLException {
 		Connection con = null;
 		try {
 			String tabCliente = "CREATE TABLE CLIENTE (     " +
-								"	ID INTEGER PRIMARY KEY, " +
+								"	ID INTEGER IDENTITY PRIMARY KEY, " +
 								"	NOME 	 VARCHAR(300),  " +
 								"	ENDERECO VARCHAR(1000)  " +
 								")"; 
 			
 			String tabPedido  = "CREATE TABLE PEDIDO (        " +
-								"	ID	INTEGER PRIMARY KEY,  " +
+								"	ID	INTEGER IDENTITY PRIMARY KEY,  " +
 								"	DATA_HORA_CRIACAO DATE,   " +
 								"	ID_CLIENTE INTEGER        " +
 								")"; 
@@ -69,7 +130,7 @@ public class ECommerceJDBC {
 		}
 	}
 	
-	public Connection getConexao() {
+	private Connection getConexao() {
 		Connection con = null;
 		try {
 			Class.forName("org.hsqldb.jdbc.JDBCDriver");
