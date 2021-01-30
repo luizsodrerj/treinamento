@@ -243,7 +243,7 @@ public class ApuracaoJDBC {
 		Connection con = null;
 		try {
 			Class.forName("org.hsqldb.jdbc.JDBCDriver");
-			con = DriverManager.getConnection("jdbc:hsqldb:file:apuracaodb", "SA", "");
+			con = DriverManager.getConnection("jdbc:hsqldb:file:curso_jdbc_bd", "SA", "");
 			
 		} catch (Exception e) {
 			System.err.println("ERROR: failed to load HSQLDB JDBC driver.");
