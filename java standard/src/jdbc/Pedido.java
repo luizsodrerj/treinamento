@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Pedido {
 
+	private Integer id;
 	private Date dataHoraCriacao;
 	private Cliente cliente;
 	private List<Produto> carrinhoCompras = new ArrayList<Produto>();
@@ -33,6 +34,14 @@ public class Pedido {
 
 	public void setCarrinhoCompras(List<Produto> carrinhoCompras) {
 		this.carrinhoCompras = carrinhoCompras;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 }
