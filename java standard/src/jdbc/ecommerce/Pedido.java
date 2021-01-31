@@ -1,4 +1,4 @@
-package jdbc;
+package jdbc.ecommerce;
 
 import java.util.ArrayList;
 import java.util.Date;

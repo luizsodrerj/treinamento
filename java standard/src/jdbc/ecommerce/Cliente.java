@@ -1,4 +1,4 @@
-package jdbc;
+package jdbc.ecommerce;
 
 public class Cliente {
 

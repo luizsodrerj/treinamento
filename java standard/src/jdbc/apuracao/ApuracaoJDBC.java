@@ -1,4 +1,4 @@
-package jdbc;
+package jdbc.apuracao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
