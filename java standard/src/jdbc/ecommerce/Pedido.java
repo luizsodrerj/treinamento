@@ -12,6 +12,15 @@ public class Pedido {
 	private List<Produto> carrinhoCompras = new ArrayList<Produto>();
 
 	
+	public Double getValorTotalPedido() {
+		Double total = 0D;
+		
+		for (Produto produto : carrinhoCompras) {
+			total = total + produto.getValorTotal();
+		}
+		return total;
+	}
+	
 	public Date getDataHoraCriacao() {
 		return dataHoraCriacao;
 	}

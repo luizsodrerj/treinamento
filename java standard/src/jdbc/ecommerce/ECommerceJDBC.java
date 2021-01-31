@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +33,30 @@ public class ECommerceJDBC {
 	}
 
 	void imprimirDadosPedido(Pedido pedido) {
+		StringBuilder buffer = new StringBuilder();
+
+		buffer.append("Dados do Pedido:\n");
+		buffer.append("Data do Pedido: ");
+		Date data    = pedido.getDataHoraCriacao();
+		String dtFmt = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(data);
+		buffer.append(dtFmt).append('\n');
+		buffer.append("Dados do Cliente:\n");
+		buffer.append("Nome: ");
+		buffer.append(pedido.getCliente().getNome()).append('\n');
+		buffer.append("Endereço: ");
+		buffer.append(pedido.getCliente().getEndereco()).append('\n');
+		buffer.append("Dados do Carrinho de Compras:\n");
+		List<Produto>carrinho = pedido.getCarrinhoCompras();
 		
+		for (Produto produto : carrinho) {
+			buffer.append("Produto: ").append(produto.getDescricao()).append('\n');
+			buffer.append("Preço: ").append(produto.getPreco()).append('\n');
+			buffer.append("Qtd: ").append(produto.getQtdPedida()).append('\n');
+			buffer.append("Valor Total: ").append(produto.getValorTotal()).append('\n');
+		}
+		buffer.append("Valor Total do Pedido: ").append(pedido.getValorTotalPedido());
+		
+		System.out.println(buffer.toString());
 	}
 
 	Pedido comprarProdutos() throws Exception {

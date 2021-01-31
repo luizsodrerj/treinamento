@@ -8,6 +8,10 @@ public class Produto {
 	private Double preco;
 	
 	
+	public Double getValorTotal() {
+		return qtdPedida * preco;
+	}
+	
 	public Pedido getPedido() {
 		return pedido;
 	}
