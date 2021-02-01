@@ -3,16 +3,18 @@ package jdbc.ecommerce;
 import java.awt.Font;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 public class ECommerceJDBC {
 
@@ -32,9 +34,25 @@ public class ECommerceJDBC {
 		}
 	}
 
+	private Pedido obterDadosPedido(Integer id) {
+		PedidoDAO pedidoDAO = new PedidoDAO(getConexao());
+		
+		return pedidoDAO.obterDadosPedido(id);
+	}
+
+	private void criarBdECommerce() {
+		PedidoDAO pedidoDAO = new PedidoDAO(getConexao());
+		
+		pedidoDAO.criarBdECommerce();
+	}
+
 	void imprimirDadosPedido(Pedido pedido) {
 		StringBuilder buffer = new StringBuilder();
-
+		DecimalFormat decimalFormat = (DecimalFormat)DecimalFormat.getInstance(new Locale("pt","BR"));
+        decimalFormat.getDecimalFormatSymbols().setDecimalSeparator(',');
+        decimalFormat.getDecimalFormatSymbols().setGroupingSeparator('.');
+        decimalFormat.setMinimumFractionDigits(2);
+		
 		buffer.append("Dados do Pedido:\n");
 		buffer.append("Data do Pedido: ");
 		Date data    = pedido.getDataHoraCriacao();
@@ -50,13 +68,37 @@ public class ECommerceJDBC {
 		
 		for (Produto produto : carrinho) {
 			buffer.append("Produto: ").append(produto.getDescricao()).append('\n');
-			buffer.append("Preço: ").append(produto.getPreco()).append('\n');
+			buffer.append("Preço: ").append(decimalFormat.format(produto.getPreco())).append('\n');
 			buffer.append("Qtd: ").append(produto.getQtdPedida()).append('\n');
-			buffer.append("Valor Total: ").append(produto.getValorTotal()).append('\n');
+			buffer.append("Valor Total: ")
+				  .append(
+					  decimalFormat.format(
+						produto.getValorTotal()
+					  )
+				   )
+				   .append('\n');
 		}
-		buffer.append("Valor Total do Pedido: ").append(pedido.getValorTotalPedido());
+		buffer.append("Valor Total do Pedido: ")
+			  .append(
+				decimalFormat.format(
+					pedido.getValorTotalPedido()
+				)
+			   );
+		String text = buffer.toString();
 		
-		System.out.println(buffer.toString());
+		JTextArea textArea = new JTextArea(text);
+		textArea.setFont(new Font("Arial", Font.BOLD, 20));
+	    textArea.setColumns(30);
+	    textArea.setRows(14);
+	    textArea.setWrapStyleWord(true);
+	    textArea.setLineWrap(true);
+	    textArea.setSize(textArea.getPreferredSize().width, textArea.getPreferredSize().height);
+	    JOptionPane.showConfirmDialog(
+	    		null, 
+	    		new JScrollPane(textArea), 
+	    		"e-commerce", 
+	    		JOptionPane.OK_OPTION
+	    	);
 	}
 
 	Pedido comprarProdutos() throws Exception {
@@ -117,225 +159,27 @@ public class ECommerceJDBC {
 	}
 	
 	private void gravarPedidoNoBanco(Pedido pedido) throws SQLException {
+		PedidoDAO pedidoDAO = null;
 		Connection con = null;
-		try {
-			String sqlCliente = "INSERT INTO CLIENTE (     " +
-								"	NOME,  " +
-								"	ENDERECO " +
-								") VALUES( " +
-								"   ?, ? " +
-								")"; 
-			
-			String sqlPedido  = "INSERT INTO PEDIDO (  " +
-								"	DATA_HORA_CRIACAO, " +
-								"	ID_CLIENTE " +
-								") VALUES(     " +
-								"   ?, ? " +
-								")"; 
 
-			String sqlProduto = "INSERT INTO PRODUTO ( " +
-								"	ID_PEDIDO,  " +
-								"	DESCRICAO,  " +
-								"	PRECO,      " +
-								"	QTD_PEDIDA " +
-								") VALUES(     " +
-								"   ?, ?, ?, ? " +
-								")"; 
-			con = getConexao();
-			
-			Cliente cliente = pedido.getCliente();
-			PreparedStatement statement = con.prepareStatement(sqlCliente);
-			statement.setString(1, cliente.getNome());
-			statement.setString(2, cliente.getEndereco());
-			statement.executeUpdate();
-			statement.close();
-			cliente.setId(retornaUltimoIdCriado(con));
-			statement.close();
-			
-			java.sql.Date dtPedido = new java.sql.Date(pedido.getDataHoraCriacao().getTime());
-			statement = con.prepareStatement(sqlPedido);
-			statement.setDate(1, dtPedido);
-			statement.setInt(2, cliente.getId());
-			statement.executeUpdate();
-			statement.close();
-			pedido.setId(retornaUltimoIdCriado(con));
-			statement.close();
-			
-			List<Produto>carrinho = pedido.getCarrinhoCompras();
-			
-			for (Produto produto: carrinho) {
-				statement = con.prepareStatement(sqlProduto);
-				statement.setInt(1, pedido.getId());
-				statement.setString(2, produto.getDescricao());
-				statement.setDouble(3, produto.getPreco());
-				statement.setInt(4, produto.getQtdPedida());
-				statement.executeUpdate();
-				statement.close();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		} finally {
-			con.close();
-		}
-	}
-
-	private Pedido obterDadosPedido(Integer idPedido) throws SQLException {
-		Connection con = null;
-		Pedido pedido  = null;
-		
 		try {
 			con = getConexao();
-
-			pedido = obterPedidoPorId(idPedido,con);
-			Cliente cliente = obterClientePorIdPedido(idPedido,con);
-			pedido.setCliente(cliente);
+			pedidoDAO = new PedidoDAO(con);
 			
-			List<Produto>carrinho = obterCarrinhoComprasPedido(idPedido,con);
-			pedido.setCarrinhoCompras(carrinho);
+			pedidoDAO.insereCliente(pedido);
+			
+			pedidoDAO.inserePedido(pedido);
+			
+			pedidoDAO.insereCarrinhoCompras(pedido);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		} finally {
-			con.close();
-		}
-		return pedido;
-	}
-
-	private List<Produto> obterCarrinhoComprasPedido(Integer idPedido, Connection con) throws SQLException {
-		String sqlProduto = "SELECT DESCRICAO,  " +
-							"		PRECO,      " +
-							"		QTD_PEDIDA 	" +
-							"FROM 	PRODUTO 	" +
-							"WHERE 	ID_PEDIDO = ?"; 
-		
-		List<Produto>carrinho = new ArrayList<Produto>();
-		
-		PreparedStatement statement = con.prepareStatement(sqlProduto);
-		statement.setInt(1, idPedido);
-		ResultSet rs = statement.executeQuery();
-		
-		while(rs.next()) {
-			Produto produto = new Produto();
-			produto.setDescricao(rs.getString("DESCRICAO"));
-			produto.setQtdPedida(rs.getInt("QTD_PEDIDA"));
-			produto.setPreco(rs.getDouble("PRECO"));
-			carrinho.add(produto);
-		}
-		statement.close();
-		
-		return carrinho;
-	}
-	
-	private Cliente obterClientePorIdPedido(Integer idPedido, Connection con) throws SQLException {
-		String sqlCliente = "SELECT C.NOME,  " +
-							"		C.ENDERECO " +
-							"FROM 	CLIENTE C, " +
-							"		PEDIDO P " +
-							"WHERE 	C.ID = P.ID_CLIENTE " + 
-							"AND	P.ID = ? "; 
-		Cliente cliente = new Cliente();
-		
-		PreparedStatement statement = con.prepareStatement(sqlCliente);
-		statement.setInt(1, idPedido);
-		ResultSet rs = statement.executeQuery();
-		rs.next();
-		cliente.setEndereco(rs.getString("ENDERECO")); 
-		cliente.setNome(rs.getString("NOME")); 
-		statement.close();
-		
-		return cliente;
-	}
-	
-	private Pedido obterPedidoPorId(Integer idPedido, Connection con) throws SQLException {
-		String sqlPedido  = "SELECT DATA_HORA_CRIACAO " +
-							"FROM 	PEDIDO " +
-							"WHERE 	ID = ? "; 
-
-		Pedido pedido = new Pedido();
-
-		PreparedStatement statement = con.prepareStatement(sqlPedido);
-		statement.setInt(1, idPedido);
-		ResultSet rs = statement.executeQuery();
-		rs.next();
-		pedido.setId(idPedido);
-		pedido.setDataHoraCriacao(rs.getDate("DATA_HORA_CRIACAO"));
-		statement.close();
-		
-		return pedido;
-	}
-	
-	private int retornaUltimoIdCriado(Connection con) throws SQLException {
-		PreparedStatement statement = con.prepareStatement("CALL IDENTITY()");
-		ResultSet resultSet 		= statement.executeQuery();
-		
-		resultSet.next();
-		int id = resultSet.getInt(1);
-		statement.close();
-		
-		return id;
-	}
-	
-	void criarBdECommerce() {
-		Connection con = null;
-		try {
-			String tabCliente = "CREATE TABLE CLIENTE (     " +
-								"	ID INTEGER IDENTITY PRIMARY KEY, " +
-								"	NOME 	 VARCHAR(300),  " +
-								"	ENDERECO VARCHAR(1000)  " +
-								")"; 
-			
-			String tabPedido  = "CREATE TABLE PEDIDO (        " +
-								"	ID	INTEGER IDENTITY PRIMARY KEY,  " +
-								"	DATA_HORA_CRIACAO DATE,   " +
-								"	ID_CLIENTE INTEGER        " +
-								")"; 
-			String fkPedido  = "ALTER TABLE PEDIDO            " +
-							   "ADD FOREIGN KEY(ID_CLIENTE)   " +
-							   "REFERENCES CLIENTE(ID)";
-
-			String tabProduto = "CREATE TABLE PRODUTO (             " +
-								"	ID		   INTEGER IDENTITY PRIMARY KEY, " +
-								"	ID_PEDIDO  INTEGER,       " +
-								"	DESCRICAO  VARCHAR(300),  " +
-								"	PRECO	   DOUBLE,        " +
-								"	QTD_PEDIDA INTEGER        " +
-								")";
-			String fkProduto =  "ALTER TABLE PRODUTO        " +
-								"ADD FOREIGN KEY(ID_PEDIDO) " +
-								"REFERENCES PEDIDO(ID)";
-			con = getConexao();
-			
-			PreparedStatement statement = con.prepareStatement(tabCliente);
-			statement.executeUpdate();
-			statement.close();
-			
-			statement = con.prepareStatement(tabPedido);
-			statement.executeUpdate();
-			statement.close();
-			
-			statement = con.prepareStatement(fkPedido);
-			statement.executeUpdate();
-			statement.close();
-
-			statement = con.prepareStatement(tabProduto);
-			statement.executeUpdate();
-			statement.close();
-
-			statement = con.prepareStatement(fkProduto);
-			statement.executeUpdate();
-			statement.close();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				con.close();
-			} catch (SQLException e) {
-			}
+			pedidoDAO.closeConnection();
 		}
 	}
+	
 	
 	private Connection getConexao() {
 		Connection con = null;
