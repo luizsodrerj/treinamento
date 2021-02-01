@@ -185,58 +185,14 @@ public class ECommerceJDBC {
 		Pedido pedido  = null;
 		
 		try {
-			String sqlCliente = "SELECT NOME,  " +
-								"		ENDERECO " +
-								"FROM 	CLIENTE " +
-								"WHERE 	ID = ? "; 
-			
-			String sqlPedido  = "SELECT DATA_HORA_CRIACAO, " +
-								"		ID_CLIENTE " +
-								"FROM 	PEDIDO " +
-								"WHERE 	ID = ? "; 
-
-			String sqlProduto = "SELECT DESCRICAO,  " +
-								"		PRECO,      " +
-								"		QTD_PEDIDA 	" +
-								"FROM 	PRODUTO 	" +
-								"WHERE 	ID_PEDIDO = ?"; 
 			con = getConexao();
 
-			Cliente cliente = new Cliente();
-			pedido 			= new Pedido();
-			
-			PreparedStatement statement = con.prepareStatement(sqlPedido);
-			statement.setInt(1, idPedido);
-			ResultSet rs = statement.executeQuery();
-			rs.next();
-			pedido.setId(idPedido);
-			pedido.setDataHoraCriacao(rs.getDate("DATA_HORA_CRIACAO"));
-			cliente.setId(rs.getInt("ID_CLIENTE"));
+			pedido = obterPedidoPorId(idPedido,con);
+			Cliente cliente = obterClientePorIdPedido(idPedido,con);
 			pedido.setCliente(cliente);
-			statement.close();
-
-			statement = con.prepareStatement(sqlCliente);
-			statement.setInt(1, cliente.getId());
-			rs = statement.executeQuery();
-			rs.next();
-			cliente.setEndereco(rs.getString("ENDERECO")); 
-			cliente.setNome(rs.getString("NOME")); 
-			statement.close();
 			
-			List<Produto>carrinho = new ArrayList<Produto>();
-			statement = con.prepareStatement(sqlProduto);
-			statement.setInt(1, pedido.getId());
-			rs = statement.executeQuery();
-			
-			while(rs.next()) {
-				Produto produto = new Produto();
-				produto.setDescricao(rs.getString("DESCRICAO"));
-				produto.setQtdPedida(rs.getInt("QTD_PEDIDA"));
-				produto.setPreco(rs.getDouble("PRECO"));
-				carrinho.add(produto);
-			}
+			List<Produto>carrinho = obterCarrinhoComprasPedido(idPedido,con);
 			pedido.setCarrinhoCompras(carrinho);
-			statement.close();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -244,6 +200,69 @@ public class ECommerceJDBC {
 		} finally {
 			con.close();
 		}
+		return pedido;
+	}
+
+	private List<Produto> obterCarrinhoComprasPedido(Integer idPedido, Connection con) throws SQLException {
+		String sqlProduto = "SELECT DESCRICAO,  " +
+							"		PRECO,      " +
+							"		QTD_PEDIDA 	" +
+							"FROM 	PRODUTO 	" +
+							"WHERE 	ID_PEDIDO = ?"; 
+		
+		List<Produto>carrinho = new ArrayList<Produto>();
+		
+		PreparedStatement statement = con.prepareStatement(sqlProduto);
+		statement.setInt(1, idPedido);
+		ResultSet rs = statement.executeQuery();
+		
+		while(rs.next()) {
+			Produto produto = new Produto();
+			produto.setDescricao(rs.getString("DESCRICAO"));
+			produto.setQtdPedida(rs.getInt("QTD_PEDIDA"));
+			produto.setPreco(rs.getDouble("PRECO"));
+			carrinho.add(produto);
+		}
+		statement.close();
+		
+		return carrinho;
+	}
+	
+	private Cliente obterClientePorIdPedido(Integer idPedido, Connection con) throws SQLException {
+		String sqlCliente = "SELECT C.NOME,  " +
+							"		C.ENDERECO " +
+							"FROM 	CLIENTE C, " +
+							"		PEDIDO P " +
+							"WHERE 	C.ID = P.ID_CLIENTE " + 
+							"AND	P.ID = ? "; 
+		Cliente cliente = new Cliente();
+		
+		PreparedStatement statement = con.prepareStatement(sqlCliente);
+		statement.setInt(1, idPedido);
+		ResultSet rs = statement.executeQuery();
+		rs.next();
+		cliente.setEndereco(rs.getString("ENDERECO")); 
+		cliente.setNome(rs.getString("NOME")); 
+		statement.close();
+		
+		return cliente;
+	}
+	
+	private Pedido obterPedidoPorId(Integer idPedido, Connection con) throws SQLException {
+		String sqlPedido  = "SELECT DATA_HORA_CRIACAO " +
+							"FROM 	PEDIDO " +
+							"WHERE 	ID = ? "; 
+
+		Pedido pedido = new Pedido();
+
+		PreparedStatement statement = con.prepareStatement(sqlPedido);
+		statement.setInt(1, idPedido);
+		ResultSet rs = statement.executeQuery();
+		rs.next();
+		pedido.setId(idPedido);
+		pedido.setDataHoraCriacao(rs.getDate("DATA_HORA_CRIACAO"));
+		statement.close();
+		
 		return pedido;
 	}
 	
