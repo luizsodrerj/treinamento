@@ -219,10 +219,45 @@ public class PedidoDAO {
 			closeConnection();
 		}
 	}
+
+	public void beginTransaction() {
+		try {
+			if (con != null) {
+				con.setAutoCommit(false);	
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		} 
+	}
+	
+	public void commitTransaction() {
+		try {
+			if (con != null) {
+				con.commit();	
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		} 
+	}
+
+	public void rollbackTransaction() {
+		try {
+			if (con != null) {
+				con.rollback();	
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		} 
+	}
 	
 	public void closeConnection() {
 		try {
-			con.close();		
+			if (con != null) {
+				con.close();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 

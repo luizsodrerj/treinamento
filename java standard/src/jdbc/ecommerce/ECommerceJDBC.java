@@ -166,14 +166,19 @@ public class ECommerceJDBC {
 			con = getConexao();
 			pedidoDAO = new PedidoDAO(con);
 			
+			pedidoDAO.beginTransaction();
+			
 			pedidoDAO.insereCliente(pedido);
 			
 			pedidoDAO.inserePedido(pedido);
 			
 			pedidoDAO.insereCarrinhoCompras(pedido);
+
+			pedidoDAO.commitTransaction();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			pedidoDAO.rollbackTransaction();
 			throw new RuntimeException(e);
 		} finally {
 			pedidoDAO.closeConnection();
