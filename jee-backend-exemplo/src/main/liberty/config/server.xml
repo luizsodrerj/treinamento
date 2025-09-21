@@ -1,0 +1,29 @@
+<server description="Intro REST Guide Liberty server">
+    <featureManager>
+        <feature>javaee-8.0</feature>
+        <feature>jaxrs-2.1</feature>
+        <feature>jpa-2.2</feature>
+        <feature>jsonp-1.1</feature>
+        <feature>cdi-2.0</feature>
+    </featureManager>
+
+    <httpEndpoint httpPort="${http.port}" httpsPort="${https.port}"
+                  id="defaultHttpEndpoint" host="*" />
+
+    <library id="hsql-jdbc">
+        <fileset>
+            <dir>C:/Users/beto/Desktop/dev/drivers libs/driver hsqldb</dir>
+            <include>hsqldb-2.2.9.jar</include>
+        </fileset>
+    </library>
+
+    <dataSource id="jee-backend-datasource" jndiName="jdbc/jee-backend">
+        <jdbcDriver libraryRef="hsql-jdbc"
+                    javax.sql.ConnectionPoolDataSource="org.hsqldb.jdbc.pool.JDBCPooledDataSource" />
+        <properties URL="jdbc:hsqldb:hsql://localhost:9001"
+                    user="sa"
+                    password="" />
+    </dataSource>
+
+    <webApplication location="jee-backend-exemplo.war" contextRoot="${app.context.root}"/>
+</server>

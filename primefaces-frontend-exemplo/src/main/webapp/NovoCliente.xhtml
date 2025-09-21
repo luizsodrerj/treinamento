@@ -1,0 +1,55 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head></h:head>
+<h:body>
+<h:form>
+    <f:loadBundle basename="messages" var="msg" />
+
+    <p:fieldset legend="Dados do Cliente" style="width:60%; margin-top:60px;">
+        <h:panelGrid columns = "1">
+            <h:panelGroup>
+                <p:outputLabel for="@next" value="Identificador" style="margin-right: 15px;"/>
+                <h:outputText value="#{sessionScope.cliente.id}" />
+            </h:panelGroup>
+            <h:panelGroup>
+                <p:outputLabel for="@next" value="#{msg['razao.social']}"/>
+                <p:inputText
+                    rendered="#{not empty sessionScope.cliente}"
+                    value="#{sessionScope.cliente.nomeRazaoSocial}"
+                    style="margin-left:20px; width:370px;"/>
+
+                <p:inputText
+                    rendered="#{empty sessionScope.cliente}"
+                    value="#{clienteBean.cliente.nomeRazaoSocial}"
+                    style="margin-left:20px; width:370px;"/>
+            </h:panelGroup>
+            <h:panelGroup>
+                <p:outputLabel for="@next" value="Data de Cadastro" style="margin-right: 15px;"/>
+                <h:outputText value="#{sessionScope.cliente.dataCadastro}"/>
+            </h:panelGroup>
+        </h:panelGrid>
+    </p:fieldset>
+
+    <p:commandButton
+        rendered="#{not empty sessionScope.cliente}"
+        value="Voltar"
+        onclick="window.location.href='#{request.contextPath}/faces/home.xhtml'"
+        style="margin-top: 15px;"
+        type="button"/>
+
+    <p:commandButton
+        rendered="#{empty sessionScope.cliente}"
+        action="#{clienteBean.onClickBtSalvar}"
+        style="margin-top: 15px;"
+        value="Salvar"
+        type="submit"
+        ajax="false"/>
+</h:form>
+</h:body>
+</html>
+
+
+

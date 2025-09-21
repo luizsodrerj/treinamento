@@ -1,0 +1,14 @@
+
+
+
+
+
+mvn clean package -DskipTests
+
+mvn clean compile
+
+cd C:\Users\beto\Desktop\dev\PostsApresentTec\git-repo\treinamento\spring-backend-exemplo
+
+set JAVA_HOME="C:\java\tools\jdk-21.0.2"
+
+mvn spring-boot:run

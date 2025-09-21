@@ -1,0 +1,64 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head></h:head>
+<h:body>
+<h:form>
+    <f:loadBundle basename="messages" var="msg" />
+
+    <div style="margin-top: 35px; margin-left: 75px;">
+
+        <p:fieldset legend="Cliente" style="width: 70%;">
+            <p:commandButton
+                action="#{clienteBean.onClickBtNovoCliente}"
+                value="Cadastrar Novo Cliente"
+                type="submit"
+                ajax="false"/>
+        </p:fieldset>
+
+        <h:panelGrid columns = "2">
+            <h:panelGroup>
+                <h5><p:outputLabel for="@next" value="#{msg['opcao.pesquisa']}"/></h5>
+
+                <p:selectOneRadio id="page" value="#{clienteBean.opcaoPesquisa}" layout="pageDirection">
+                    <f:selectItem itemLabel="Por Id" itemValue="id"/>
+                    <f:selectItem itemLabel="Por #{msg['razao.social']}" itemValue="razao"/>
+                    <f:selectItem itemLabel="Todos" itemValue="todos"/>
+                </p:selectOneRadio>
+            </h:panelGroup>
+            <h:panelGroup>
+                <h:inputText id="criterio" value="#{clienteBean.criterio}"/>
+                <p:commandButton
+                    style="margin-left: 20px;"
+                    action="#{clienteBean.pesquisar}"
+                    value="Pesquisar"
+                    type="submit"
+                    ajax="false"/>
+            </h:panelGroup>
+        </h:panelGrid>
+
+        <div style="margin-top:20px; width:70%;">
+            <p:dataTable var="cliente" value="#{clienteBean.clientes}">
+                <p:column headerText="Id">
+                    <h:outputText value="#{cliente.id}" />
+                </p:column>
+                <p:column headerText="#{msg['razao.social']}">
+                    <h:outputText value="#{cliente.nomeRazaoSocial}" />
+                </p:column>
+                <p:column headerText="#">
+                    <p:commandButton
+                        action="#{clienteBean.detalheCliente}"
+                        value="Ver Detalhes"
+                        type="submit"
+                        ajax="false">
+                        <f:param name="id" value="#{cliente.id}"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </div>
+    </div>
+</h:form>
+</h:body>
+</html>
