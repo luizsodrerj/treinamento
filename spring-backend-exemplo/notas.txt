@@ -5,4 +5,10 @@ Iniciar HsqlDB em modo server:
 set CLASSPATH=%CLASSPATH%;hsqldb-2.2.9.jar
 java org.hsqldb.Server -database cliente
 
-
+script DDL criação da tabela de clientes:
+CREATE TABLE CLIENTES (
+	ID_CLIENTE INTEGER NOT NULL IDENTITY,
+	NOME_RAZAO VARCHAR(300),
+	DT_CADASTRO DATE,
+	CONSTRAINT SYS_PK_10066 PRIMARY KEY (ID_CLIENTE)
+);
