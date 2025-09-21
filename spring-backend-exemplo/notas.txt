@@ -1,14 +1,8 @@
 
 
 
+Iniciar HsqlDB em modo server:
+set CLASSPATH=%CLASSPATH%;hsqldb-2.2.9.jar
+java org.hsqldb.Server -database cliente
 
 
-mvn clean package -DskipTests
-
-mvn clean compile
-
-cd C:\Users\beto\Desktop\dev\PostsApresentTec\git-repo\treinamento\spring-backend-exemplo
-
-set JAVA_HOME="C:\java\tools\jdk-21.0.2"
-
-mvn spring-boot:run
