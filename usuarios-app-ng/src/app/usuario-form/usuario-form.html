@@ -1,0 +1,27 @@
+
+
+<div style="margin-left: 20%;">
+    <p>Tipos de Usuários</p>
+    <select #tipoUsuario (change)="onSelectChange(tipoUsuario.value)">
+        <option [value]="">Selecione uma opção</option>
+        <option *ngFor="let option of (options | async)" [value]="option.origem">
+            {{ option.descr }}
+        </option>
+    </select>
+
+    <div style="margin-top: 27px;">
+        <table>
+            <th>Nome</th>
+            <th>Matrícula</th>
+            <th>Data de Nascimento</th>
+            <th>Tipo de Usuário</th>
+            <tr *ngFor="let user of (users | async)">
+                <td>{{user.nomeUsu}}</td>
+                <td>{{user.matrUsu}}</td>
+                <td style="text-align: center;">{{user.dataNasc}}</td>
+                <td>{{user.tipoUsuario}}</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
