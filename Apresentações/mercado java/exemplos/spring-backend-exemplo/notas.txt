@@ -2,7 +2,7 @@
 
 
 Checklist para preparação do Ambiente de Desenvolvimento:
-link para o checklist no Github - https://github.com/luizsodrerj/treinamento/tree/master/spring-backend-exemplo
+link para o checklist no Github - https://github.com/luizsodrerj/treinamento/tree/master/Apresenta%C3%A7%C3%B5es/mercado%20java/exemplos/spring-backend-exemplo
 clique no arquivo notas.txt para obter todos os passos do checklist 
 
 Passo 1: 
