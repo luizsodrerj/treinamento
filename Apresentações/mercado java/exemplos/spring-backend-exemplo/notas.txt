@@ -17,7 +17,7 @@ Passo 2:
 - Iniciar HsqlDB em modo server:
 - Cria uma pasta e copie para ela o jar do Banco.
 - Dentro da pasta, abra um prompt de comando e digite os seguintes comandos: 
-	set CLASSPATH=%CLASSPATH%;hsqldb-2.2.9.jar
+	set CLASSPATH=%CLASSPATH%;hsqldb-2.2.9.jar;
 	java org.hsqldb.Server -database cliente
 - Use a ferramenta DBeaver para criar a tabela de teste (link - https://dbeaver.io/download/)  
 - Script DDL de criação da tabela de clientes:
@@ -30,7 +30,10 @@ CREATE TABLE CLIENTES (
 
 Passo 3:
 - Instale a ferramenta Maven (link - https://maven.apache.org/)
-- configure a pasta bin no path do Sistema
+- crie a variavel de ambiente MAVEN_HOME no Sistema Operacional apontando para o home da instalação do Maven
+- configure a pasta bin no path do Sistema 
+- (Ex.: MAVEN_HOME=c:\dev\maven) (configuração path: ...;%MAVEN_HOME%\bin)
+- abra um prompt de comando e digite mvn -version para verificar a configuração
 
 Passo 4:
 - Instale a IDE IntelliJ IDEA Community Edition (link - www.jetbrains.com/idea/download/)
